@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Paqueteria.API/Paqueteria.API.csproj" />
+  <Project Path="Paqueteria.Business/Paqueteria.Business.csproj" />
+  <Project Path="Paqueteria.Data/Paqueteria.Infrastructure.csproj" />
+  <Project Path="Paqueteria.Entities/Paqueteria.Domain.csproj" />
+  <Project Path="Paqueteria.Web/Paqueteria.Web.csproj" />
+</Solution>
