@@ -5,7 +5,9 @@ namespace Paqueteria.Infrastructure.Context
 {
     public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) 
+        { 
+        }
 
         public DbSet<Residente> Residentes { get; set; }
         public DbSet<Paquete> Paquetes { get; set; }
