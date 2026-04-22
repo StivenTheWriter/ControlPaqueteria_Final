@@ -3,7 +3,7 @@ using Paqueteria.Domain.Repository;
 using Paqueteria.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 
-namespace Paqueteria.Infrastructure.Repositories // Asegúrate que termine en .Repositories
+namespace Paqueteria.Infrastructure.Repositories 
 {
     public class ResidenteRepository : IResidenteRepository
     {
@@ -23,5 +23,22 @@ namespace Paqueteria.Infrastructure.Repositories // Asegúrate que termine en .R
             await _context.Residentes.AddAsync(residente);
             await _context.SaveChangesAsync();
         }
+
+        public async Task UpdateAsync(Residente residente)
+        {
+            _context.Residentes.Update(residente);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            var residente = await GetByIdAsync(id);
+            if (residente != null)
+            {
+                _context.Residentes.Remove(residente);
+                await _context.SaveChangesAsync();
+            }
+        }
+
     }
 }

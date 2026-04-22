@@ -8,5 +8,7 @@ namespace Paqueteria.Domain.Repository
         Task<Paquete?> GetByIdAsync(int id);
         Task AddAsync(Paquete paquete);
         Task UpdateAsync(Paquete paquete); //para marcar como entregado
+
+        Task DeleteAsync(int id);
     }
 }

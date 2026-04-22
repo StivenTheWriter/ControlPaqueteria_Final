@@ -39,5 +39,9 @@ namespace Paqueteria.Business.Services
             };
             await _paqueteRepo.AddAsync(nuevoPaquete);
         }
+        public async Task EliminarPaquete(int id)
+        {
+            await _paqueteRepo.DeleteAsync(id);
+        }
     }
 }

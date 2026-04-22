@@ -6,5 +6,6 @@ namespace Paqueteria.Business.Services
     {
         Task<IEnumerable<PaqueteDto>> ObtenerTodosLosPaquetes();
         Task RegistrarPaquete(PaqueteDto paqueteDto, int residenteId);
+        Task EliminarPaquete(int id);
     }
 }

@@ -37,5 +37,14 @@ namespace Paqueteria.Infrastructure.Repositories
             _context.Paquetes.Update(paquete);
             await _context.SaveChangesAsync();
         }
+        public async Task DeleteAsync(int id)
+        {
+            var paquete = await _context.Paquetes.FindAsync(id);
+            if (paquete != null)
+            {
+                _context.Paquetes.Remove(paquete);
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }

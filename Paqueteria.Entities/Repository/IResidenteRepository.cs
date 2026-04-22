@@ -7,5 +7,7 @@ namespace Paqueteria.Domain.Repository
         Task<IEnumerable<Residente>> GetAllAsync();
         Task<Residente?> GetByIdAsync(int id);
         Task AddAsync(Residente residente);
+        Task UpdateAsync(Residente residente);
+        Task DeleteAsync(int id);
     }
 }
