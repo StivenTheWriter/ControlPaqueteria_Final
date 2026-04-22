@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using Paqueteria.Infrastructure.Context; 
+using Paqueteria.Infrastructure.Context;
+using Paqueteria.Domain.Repository;
+using Paqueteria.Infrastructure.Repositories;
+using Paqueteria.Business.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +13,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IResidenteRepository, ResidenteRepository>();
+builder.Services.AddScoped<IPaqueteRepository, PaqueteRepository>();
+
+// Registrar Servicios
+builder.Services.AddScoped<IPaqueteService, PaqueteService>();
+
 
 var app = builder.Build();
 
