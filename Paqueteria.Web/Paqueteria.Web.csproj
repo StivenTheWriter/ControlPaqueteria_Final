@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Paqueteria.Business\Paqueteria.Business.csproj" />
     <ProjectReference Include="..\Paqueteria.Entities\Paqueteria.Domain.csproj" />
   </ItemGroup>
 

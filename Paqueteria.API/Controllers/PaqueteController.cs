@@ -33,15 +33,11 @@ namespace Paqueteria.API.Controllers
         [HttpPut("{id}/entregar")]
         public async Task<ActionResult> MarcarComoEntregado(int id)
         {
-            
-            var paquetes = await _paqueteService.ObtenerTodosLosPaquetes();
-            var paquete = paquetes.FirstOrDefault(p => p.Id == id);
+            await _paqueteService.MarcarComoEntregado(id);
 
-            if (paquete == null) return NotFound();
-
-            
             return Ok(new { message = "Paquete marcado como entregado" });
         }
+
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)

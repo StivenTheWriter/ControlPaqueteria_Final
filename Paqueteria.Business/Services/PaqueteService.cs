@@ -17,7 +17,6 @@ namespace Paqueteria.Business.Services
         {
             var paquetes = await _paqueteRepo.GetAllAsync();
 
-            // Mapeo manual de Entidad a DTO
             return paquetes.Select(p => new PaqueteDto
             {
                 Id = p.Id,
@@ -39,9 +38,22 @@ namespace Paqueteria.Business.Services
             };
             await _paqueteRepo.AddAsync(nuevoPaquete);
         }
+
         public async Task EliminarPaquete(int id)
         {
             await _paqueteRepo.DeleteAsync(id);
+        }
+
+        
+        public async Task MarcarComoEntregado(int id)
+        {
+            var paquete = await _paqueteRepo.GetByIdAsync(id); 
+
+            if (paquete != null)
+            {
+                paquete.Estado = "Entregado";
+                await _paqueteRepo.UpdateAsync(paquete); 
+            }
         }
     }
 }

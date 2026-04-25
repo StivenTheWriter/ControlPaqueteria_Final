@@ -20,6 +20,10 @@ builder.Services.AddScoped<IPaqueteRepository, PaqueteRepository>();
 // Registrar Servicios
 builder.Services.AddScoped<IPaqueteService, PaqueteService>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", b => b.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin());
+});
 
 var app = builder.Build();
 
@@ -31,6 +35,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowAll");
 app.UseAuthorization();
 app.MapControllers();
 

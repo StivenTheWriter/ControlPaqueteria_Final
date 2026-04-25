@@ -1,0 +1,93 @@
+﻿@page "/residentes"
+@using Paqueteria.Domain.Entities
+@inject HttpClient Http
+
+<div class="container-fluid px-4 py-4">
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-6">
+            <h2 class="fw-bold">Directorio de <span class="text-primary">Residentes</span></h2>
+        </div>
+        <div class="col-md-6 text-end">
+            <div class="input-group shadow-sm w-75 ms-auto">
+                <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control border-start-0" placeholder="Filtrar residente..." @bind-value="searchTerm" @bind-value:event="oninput" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-4 sticky-top" style="top: 20px;">
+                <h5 class="fw-bold mb-4">Nuevo Registro</h5>
+                <div class="mb-3">
+                    <label class="form-label small text-muted fw-bold">Nombres</label>
+                    <input @bind="nuevo.Nombre" class="form-control bg-light" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small text-muted fw-bold">Apellidos</label>
+                    <input @bind="nuevo.Apellido" class="form-control bg-light" />
+                </div>
+                <div class="mb-4">
+                    <label class="form-label small text-muted fw-bold">Unidad / Apto</label>
+                    <input @bind="nuevo.Apartamento" class="form-control bg-light" />
+                </div>
+                <button @onclick="Guardar" class="btn btn-primary w-100 fw-bold py-2">Registrar en Codex</button>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm overflow-hidden">
+                <table class="table table-hover align-middle m-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4 py-3">RESIDENTE</th>
+                            <th class="py-3">APARTAMENTO</th>
+                            <th class="text-end pe-4 py-3">ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in residentesFiltrados)
+                        {
+                            <tr>
+                                <td class="ps-4 fw-bold">@r.Nombre @r.Apellido</td>
+                                <td><span class="badge bg-soft-primary text-primary px-3">UNIT @r.Apartamento</span></td>
+                                <td class="text-end pe-4">
+                                    <button class="btn btn-sm btn-outline-danger border-0" @onclick="() => Borrar(r.Id)"><i class="bi bi-trash3"></i></button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    List<Residente> lista = new();
+    Residente nuevo = new();
+    string searchTerm = "";
+
+    IEnumerable<Residente> residentesFiltrados => lista.Where(r =>
+        string.IsNullOrEmpty(searchTerm) ||
+        r.Nombre.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+        r.Apartamento.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+
+    protected override async Task OnInitializedAsync() => await Cargar();
+
+    async Task Cargar() => lista = await Http.GetFromJsonAsync<List<Residente>>("api/residentes") ?? new();
+
+    async Task Guardar()
+    {
+        if (string.IsNullOrEmpty(nuevo.Nombre)) return;
+        await Http.PostAsJsonAsync("api/residentes", nuevo);
+        nuevo = new();
+        await Cargar();
+    }
+
+    async Task Borrar(int id)
+    {
+        await Http.DeleteAsync($"api/residentes/{id}");
+        await Cargar();
+    }
+}

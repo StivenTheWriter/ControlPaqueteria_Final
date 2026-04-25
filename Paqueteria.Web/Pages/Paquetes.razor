@@ -1,0 +1,145 @@
+﻿@page "/paquetes"
+@using Paqueteria.Business.DTOs
+@using Paqueteria.Domain.Entities
+@inject HttpClient Http
+
+<div class="container-fluid px-4 py-4">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h2 class="fw-bold m-0">Monitor de <span class="text-primary">Logística</span></h2>
+            <p class="text-muted m-0">Control de flujo de correspondencia entrante.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <input type="text" class="form-control shadow-sm" placeholder="Buscar tracking..." @bind-value="busqueda" @bind-value:event="oninput" />
+            <button class="btn btn-primary" @onclick="CargarDatos"><i class="bi bi-arrow-repeat"></i></button>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm p-4 mb-5 bg-dark text-white rounded-4">
+        <h6 class="fw-bold mb-3 text-uppercase opacity-75">Registro de Ingreso Manual</h6>
+        <div class="row g-3">
+            <div class="col-md-3">
+                <input @bind="nuevoPaquete.TrackingCode" class="form-control bg-dark text-white border-secondary" placeholder="Tracking #" />
+            </div>
+            <div class="col-md-3">
+                <select @bind="nuevoPaquete.Courier" class="form-select bg-dark text-white border-secondary">
+                    <option value="">Seleccione Courier</option>
+                    <option value="EPS">EPS</option>
+                    <option value="BM Cargo">BM Cargo</option>
+                    <option value="Vimenpaq">Vimenpaq</option>
+                    <option value="Amazon">Amazon</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <select @bind="selectedResidenteId" class="form-select bg-dark text-white border-secondary">
+                    <option value="0">Asignar a residente...</option>
+                    @foreach (var r in residentesDisponibles)
+                    {
+                        <option value="@r.Id">@r.Nombre (Apto @r.Apartamento)</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button @onclick="GuardarPaquete" class="btn btn-primary w-100 fw-bold">Registrar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        @foreach (var p in paquetesFiltrados)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm hover-shadow transition-all">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="badge @(p.Estado == "Pendiente" ? "bg-soft-warning text-warning" : "bg-soft-success text-success") px-3 py-2 rounded-pill">
+                                @p.Estado.ToUpper()
+                            </span>
+                            <i class="bi bi-box-seam text-muted"></i>
+                        </div>
+                        <h5 class="fw-bold mb-1">@p.TrackingCode</h5>
+                        <p class="text-muted small mb-4">Vía @p.Courier</p>
+                        
+                        <div class="bg-light p-3 rounded-3 border-0 d-flex align-items-center mb-4">
+                            <div class="bg-primary text-white rounded-circle p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items:center; justify-content:center;">
+                                @p.NombreResidente[0]
+                            </div>
+                            <div>
+                                <small class="text-muted d-block" style="font-size: 0.7rem;">RESIDENTE</small>
+                                <span class="fw-bold">@p.NombreResidente</span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-danger btn-sm w-100 py-2 border-0 bg-light" @onclick="() => Eliminar(p.Id)">Eliminar</button>
+                            @if (p.Estado == "Pendiente")
+                            {
+                                <button class="btn btn-success btn-sm w-100 py-2 fw-bold" @onclick="() => Entregar(p.Id)">
+                                    <i class="bi bi-check2-circle"></i> Entregar
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+
+
+    private List<PaqueteDto> paquetes = new();
+    private List<Residente> residentesDisponibles = new();
+    private PaqueteDto nuevoPaquete = new() { Estado = "Pendiente" };
+    private int selectedResidenteId;
+    private string busqueda = "";
+
+    IEnumerable<PaqueteDto> paquetesFiltrados => paquetes.Where(p =>
+        string.IsNullOrEmpty(busqueda) ||
+        p.TrackingCode.Contains(busqueda, StringComparison.OrdinalIgnoreCase) ||
+        p.NombreResidente.Contains(busqueda, StringComparison.OrdinalIgnoreCase));
+
+    protected override async Task OnInitializedAsync() => await CargarDatos();
+
+
+    private async Task Entregar(int id)
+    {
+        // Hacemos un PUT a la ruta exacta que definimos en el controlador: api/paquetes/{id}/entregar
+        var response = await Http.PutAsync($"api/paquetes/{id}/entregar", null);
+
+        if (response.IsSuccessStatusCode)
+        {
+            // Si la API responde OK, refrescamos la lista para que el paquete
+            // desaparezca de "Pendientes" o cambie de color.
+            await CargarDatos();
+        }
+        else
+        {
+            // Esto te avisará en la consola del navegador (F12) si algo sale mal
+            Console.WriteLine("Error al procesar la entrega en el servidor.");
+        }
+    }
+
+
+    private async Task CargarDatos()
+    {
+        paquetes = await Http.GetFromJsonAsync<List<PaqueteDto>>("api/paquetes") ?? new();
+        residentesDisponibles = await Http.GetFromJsonAsync<List<Residente>>("api/residentes") ?? new();
+    }
+
+    private async Task GuardarPaquete()
+    {
+        if (selectedResidenteId == 0 || string.IsNullOrEmpty(nuevoPaquete.TrackingCode)) return;
+        await Http.PostAsJsonAsync($"api/paquetes/{selectedResidenteId}", nuevoPaquete);
+        nuevoPaquete = new() { Estado = "Pendiente" };
+        selectedResidenteId = 0;
+        await CargarDatos();
+    }
+
+    private async Task Eliminar(int id)
+    {
+        await Http.DeleteAsync($"api/paquetes/{id}");
+        await CargarDatos();
+    }
+}

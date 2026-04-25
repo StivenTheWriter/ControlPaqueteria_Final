@@ -1,6 +1,6 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿<div class="top-row ps-3 navbar navbar-dark bg-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">Paqueteria.Web</a>
+        <a class="navbar-brand fw-bold" href=""><i class="bi bi-cpu"></i> CODEX <span class="text-primary">OS</span></a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -8,20 +8,36 @@
 </div>
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
+    <nav class="flex-column mt-2">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+                <span class="bi bi-grid-1x2-fill" aria-hidden="true"></span> Dashboard
             </NavLink>
         </div>
+
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
+            <NavLink class="nav-link" href="residentes">
+                <span class="bi bi-people-fill" aria-hidden="true"></span> Residentes
             </NavLink>
         </div>
+
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
+            <NavLink class="nav-link" href="paquetes">
+                <span class="bi bi-box-seam-fill" aria-hidden="true"></span> Logística
+            </NavLink>
+        </div>
+
+        <hr class="text-white opacity-25 mx-3" />
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="historial">
+                <span class="bi bi-clock-history" aria-hidden="true"></span> Historial
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="configuracion">
+                <span class="bi bi-gear-fill" aria-hidden="true"></span> Configuración
             </NavLink>
         </div>
     </nav>
@@ -29,7 +45,6 @@
 
 @code {
     private bool collapseNavMenu = true;
-
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
     private void ToggleNavMenu()
